@@ -1,9 +1,8 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-
+import { useNavigation } from "@react-navigation/native";
 export default function Header() {
-	const router=useRouter()
+	const navigation=useNavigation()
   return (
     <View className="bg-white px-5 pt-14 pb-6 shadow-sm border-b border-gray-100">
 
@@ -31,7 +30,7 @@ export default function Header() {
 
      {/* RIGHT: ADD BLOG BUTTON */}
 <TouchableOpacity
-		onPress={()=>router.push("/Screens/AddBlog")}
+		onPress={()=>navigation.navigate("AddBlog")}
   className="flex-row items-center bg-violet-600 px-4 py-2.5 rounded-xl"
 >
   <Ionicons name="add" size={18} color="white" />

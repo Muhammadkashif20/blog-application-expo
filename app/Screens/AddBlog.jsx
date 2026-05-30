@@ -181,9 +181,8 @@ const AddBlog = () => {
 
 </View>
 
-    </ScrollView>
-		<Navigation/>
-		</View>
+    </ScrollView>	
+					</View>
 
   );
 };
