@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
+import Navigation from "../Home/Navigation";
 
 const AddBlog = () => {
   return (
@@ -181,6 +182,7 @@ const AddBlog = () => {
 </View>
 
     </ScrollView>
+		<Navigation/>
 		</View>
 
   );
