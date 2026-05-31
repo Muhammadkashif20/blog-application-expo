@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
-
+import { useNavigation } from "@react-navigation/native";
 export const exploreData = [
   {
     category: "Technology",
@@ -126,7 +126,16 @@ export const exploreData = [
 ];
 
 export default function Explore() {
+	const [selectedCategory,setSelectedCategory]=useState("Development")
 	const categories=exploreData.map((item)=>item.category)
+	console.log("categories=>",categories)
+	const ideas=exploreData.map((item)=>item.ideas)
+	console.log("ideas=>",ideas)
+	
+	const findCategories=exploreData.find((item)=>item.category === selectedCategory)?.ideas || [];
+	console.log("trending_ideas=>",findCategories)
+
+	const navigation=useNavigation()
   return (
 		<View className="flex-1">
 			<Header/>
@@ -156,10 +165,17 @@ export default function Explore() {
 
           {categories.map((item, index) => (
             <TouchableOpacity
-						key={index}
-              className="bg-white border border-gray-200 px-4 py-2 rounded-full mr-2 mb-2"
+              key={index}
+              onPress={() => setSelectedCategory(item)}
+              className={`border px-4 py-2 rounded-full mr-2 mb-2 ${
+                selectedCategory === item
+                  ? "bg-violet-600 border-violet-600"
+                  : "bg-white border-gray-200"
+              }`}
             >
-              <Text className="text-gray-700 text-xs font-medium">
+              <Text className={`text-xs font-medium ${
+                selectedCategory === item ? "text-white" : "text-gray-700"
+              }`}>
                 {item}
               </Text>
             </TouchableOpacity>
@@ -176,7 +192,7 @@ export default function Explore() {
           Trending Ideas
         </Text>
 
-        {trendingIdeas.map((item) => (
+        {findCategories.map((item) => (
 					<TouchableOpacity
 					key={item.id}
 					className="bg-white p-4 rounded-2xl border border-gray-100 mb-3 flex-row items-center"
@@ -204,9 +220,11 @@ export default function Explore() {
       </View>
 
       {/* CTA */}
-      <View className="px-5 mt-6 mb-10">
+      <View className="px-5 mt-3 mb-6">
 
-        <TouchableOpacity className="bg-violet-600 p-4 rounded-2xl flex-row items-center justify-between">
+        <TouchableOpacity
+				onPress={()=>navigation.navigate("AddBlog")}
+				className="bg-violet-600 p-4 rounded-2xl flex-row items-center justify-between">
 
           <View>
             <Text className="text-white font-semibold text-base">

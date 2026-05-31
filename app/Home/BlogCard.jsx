@@ -1,23 +1,33 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
+import { useNavigation } from "@react-navigation/native";
 export default function BlogCard() {
+	const navigation=useNavigation()
   return (
    <View className="px-5 mt-3">
 
-  {/* HEADER */}
-  <View className="flex-row items-center justify-between mb-4">
+ <View className="flex-row items-center justify-between mb-4">
 
-    <Text className="text-gray-900 text-lg font-bold">
-      Recent Blogs
+  <View>
+    <Text className="text-gray-900 text-xl font-bold">
+      Recent Blog
     </Text>
 
-    <Text className="text-violet-600 text-xs font-semibold">
-      See all
+    <Text className="text-gray-400 text-xs">
+      Fresh ideas from creators
     </Text>
-
   </View>
+
+  <TouchableOpacity
+		onPress={()=>navigation.navigate("Blogs")}
+	className="bg-violet-50 px-4 py-2 rounded-xl">
+    <Text className="text-violet-700 text-xs font-semibold">
+      See More
+    </Text>
+  </TouchableOpacity>
+
+</View>
 
   {/* SINGLE CARD */}
   <TouchableOpacity

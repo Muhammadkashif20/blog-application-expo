@@ -28,7 +28,7 @@ export default function ExploreBlogs() {
     <View className="mt-8">
 
       {/* HEADER */}
-      <View className="flex-row items-end justify-between px-5 mb-3">
+      <View className="flex-row items-end justify-between px-5 pb-4">
         <View className="flex-1 pr-3">
 
           <Text className="text-gray-900 text-lg font-bold">
@@ -81,8 +81,8 @@ export default function ExploreBlogs() {
       {/* CTA BANNER */}
       <TouchableOpacity
 				onPress={()=>navigation.navigate("Explore")}
-			
-			className="mx-5 mt-6 bg-violet-600 px-5 py-4 rounded-2xl flex-row items-center justify-between">
+
+			className="mx-5 mt-3 bg-violet-600 px-5 py-4 rounded-2xl flex-row items-center justify-between">
 
         <View className="flex-1 pr-3">
           <Text className="text-white font-semibold text-base">

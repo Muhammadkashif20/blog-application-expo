@@ -67,11 +67,11 @@ const Blogs = () => {
             </Text>
           </View>
 
-          <TouchableOpacity className="bg-violet-50 border border-violet-100 px-4 py-2 rounded-2xl">
-      <Text className="text-violet-700 text-xs font-semibold">
-        View All
-      </Text>
-    </TouchableOpacity>
+      <TouchableOpacity className="bg-violet-50 border border-violet-100 px-4 py-2 rounded-2xl">
+  <Text className="text-violet-700 text-xs font-semibold">
+    Latest Posts
+  </Text>
+</TouchableOpacity>
 
         </View>
 
