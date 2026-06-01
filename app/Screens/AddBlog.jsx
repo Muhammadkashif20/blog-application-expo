@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,9 +8,28 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
-import Navigation from "../Home/Navigation";
-
+import Axios from "axios";
 const AddBlog = () => {
+	const [title, setTitle] = useState("");
+	const [description, setDescription] = useState("");
+	const [image, setImage] = useState(null);
+
+		const publishBlog = () => {		
+			try {
+				Axios.post("http://localhost:4000/api/AddBlog", {
+					title: title,
+					description: description,
+					image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+				});
+				alert("Blog published successfully!");
+			}
+			catch (error) {
+				console.error("Error publishing blog:", error);
+				alert("Failed to publish blog. Please try again.");
+			}
+				
+		}
+
   return (
 		<View className="flex-1">
 			<Header/>
@@ -89,6 +108,7 @@ const AddBlog = () => {
       </Text>
 
       <TextInput
+				onChangeText={(text)=>setTitle(text)}
         placeholder="Enter a Blog Title..."
         placeholderTextColor="#B0B0B0"
         className="bg-gray-50 px-4 py-4 rounded-2xl text-gray-900 text-[15px] border border-gray-200"
@@ -138,6 +158,7 @@ const AddBlog = () => {
       </Text>
 
       <TextInput
+        onChangeText={(text) => setDescription(text)}	
         placeholder="Write your story in detail..."
         placeholderTextColor="#B0B0B0"
         multiline
@@ -164,6 +185,7 @@ const AddBlog = () => {
 
   {/* PUBLISH BUTTON */}
   <TouchableOpacity
+		onPress={publishBlog}
     className="bg-violet-600 py-5 rounded-2xl items-center my-6"
     style={{
       shadowColor: "#7C3AED",

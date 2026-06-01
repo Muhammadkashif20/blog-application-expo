@@ -9,4 +9,4 @@ const SearchBlogs = () => {
 	)
 }
 
-export default SearchBlogs
+export default SearchBlogs;
