@@ -1,24 +1,14 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
 import Axios from "axios";
 
 const Blogs = () => {
   const [blogs, setBlogs] = useState([]);
-
   const getBlog = async () => {
     try {
-      const response = await Axios.get(
-        "http://192.168.1.9:4000/api/GetBlogs"
-      );
-
+      const response = await Axios.get("http://192.168.1.9:4000/api/GetBlogs");
       setBlogs(response.data);
     } catch (error) {
       console.log("Error:", error);
@@ -28,6 +18,16 @@ const Blogs = () => {
   useEffect(() => {
     getBlog();
   }, []);
+const formatTimeOnly = (dateString) => {
+  const date = new Date(dateString);
+
+  const time = date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return `Today • ${time}`;
+};
 
   return (
     <View className="flex-1">
@@ -58,7 +58,8 @@ const Blogs = () => {
           </View>
 
           <Text className="text-gray-500 text-sm leading-6 mt-3">
-            Explore curated stories, insights and ideas from creators around the world.
+            Explore curated stories, insights and ideas from creators around the
+            world.
           </Text>
         </View>
 
@@ -70,11 +71,11 @@ const Blogs = () => {
               activeOpacity={0.92}
               className="bg-white rounded-[28px] mb-6 overflow-hidden border border-gray-100"
               style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.04,
-                shadowRadius: 10,
-                elevation: 1,
+            	shadowColor: "#000",
+								shadowOffset: { width: 0, height: 4 },
+								shadowOpacity: 0.05,
+								shadowRadius: 10,
+								elevation: 3,
               }}
             >
               {/* IMAGE + CATEGORY */}
@@ -85,9 +86,9 @@ const Blogs = () => {
                 />
 
                 {/* STATIC CATEGORY */}
-                <View className="absolute top-4 left-4 bg-white/90 px-3 py-1.5 rounded-full">
-                  <Text className="text-gray-900 text-xs font-semibold">
-                    Technology
+                <View className="absolute top-4 left-4 bg-violet-600 px-3 py-1 rounded-full">
+                  <Text className="text-white text-xs font-semibold">
+                    Design
                   </Text>
                 </View>
               </View>
@@ -97,14 +98,10 @@ const Blogs = () => {
                 {/* META */}
                 <View className="flex-row items-center justify-between mb-3">
                   <View className="flex-row items-center">
-                    <Ionicons
-                      name="time-outline"
-                      size={15}
-                      color="#9CA3AF"
-                    />
+                    <Ionicons name="time-outline" size={15} color="#9CA3AF" />
 
                     <Text className="text-gray-400 text-xs ml-1">
-                      {new Date(blog.createdAt).toLocaleDateString()}
+                       {formatTimeOnly(blog.createdAt)}
                     </Text>
                   </View>
 
