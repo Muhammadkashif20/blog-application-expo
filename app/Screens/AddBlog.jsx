@@ -27,6 +27,7 @@ const AddBlog = () => {
         image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
       });
       alert("Blog published successfully!");
+			// Clear form fields after successful submission
 			setTitle("");
 			setDescription("");
     } catch (error) {
@@ -96,6 +97,7 @@ const AddBlog = () => {
               </Text>
 
               <TextInput
+								value={title}
                 onChangeText={(text) => setTitle(text)}
                 placeholder="Enter a Blog Title..."
                 placeholderTextColor="#B0B0B0"
@@ -140,6 +142,7 @@ const AddBlog = () => {
               </Text>
 
               <TextInput
+                value={description}
                 onChangeText={(text) => setDescription(text)}
                 placeholder="Write your story in detail..."
                 placeholderTextColor="#B0B0B0"

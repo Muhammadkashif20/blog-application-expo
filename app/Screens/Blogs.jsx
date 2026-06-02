@@ -3,9 +3,10 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
 import Axios from "axios";
-
+import { useNavigation } from "@react-navigation/native";
 const Blogs = () => {
   const [blogs, setBlogs] = useState([]);
+	const navigation = useNavigation();
   const getBlog = async () => {
     try {
       const response = await Axios.get("http://192.168.1.9:4000/api/GetBlogs");
@@ -18,16 +19,32 @@ const Blogs = () => {
   useEffect(() => {
     getBlog();
   }, []);
-const formatTimeOnly = (dateString) => {
-  const date = new Date(dateString);
+  const formatTimeOnly = (dateString) => {
+    const date = new Date(dateString);
 
-  const time = date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+    const time = date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return `Today • ${time}`;
+  };
 
-  return `Today • ${time}`;
-};
+		const editBlog = async(id,title,description)=>{
+			try {
+			    const response = await Axios.put(`http://192.168.1.9:4000/api/updateBlog/${id}`,{
+						title:"Updated Title",
+						description:"Updated Description"
+					});
+					console.log("Blog updated:", response.data);
+					const updatedBlogs = blogs.map((blog) =>
+						blog._id === response.data._id ? response.data : blog
+					);
+					setBlogs(updatedBlogs);
+			}
+			catch(error){
+				console.log("Error:",error)
+			}
+		}
 
   return (
     <View className="flex-1">
@@ -71,11 +88,11 @@ const formatTimeOnly = (dateString) => {
               activeOpacity={0.92}
               className="bg-white rounded-[28px] mb-6 overflow-hidden border border-gray-100"
               style={{
-            	shadowColor: "#000",
-								shadowOffset: { width: 0, height: 4 },
-								shadowOpacity: 0.05,
-								shadowRadius: 10,
-								elevation: 3,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.05,
+                shadowRadius: 10,
+                elevation: 3,
               }}
             >
               {/* IMAGE + CATEGORY */}
@@ -101,7 +118,7 @@ const formatTimeOnly = (dateString) => {
                     <Ionicons name="time-outline" size={15} color="#9CA3AF" />
 
                     <Text className="text-gray-400 text-xs ml-1">
-                       {formatTimeOnly(blog.createdAt)}
+                      {formatTimeOnly(blog.createdAt)}
                     </Text>
                   </View>
 
@@ -144,16 +161,30 @@ const formatTimeOnly = (dateString) => {
                         Content Creator
                       </Text>
                     </View>
-                  </View>
+                  </View>/
 
-                  {/* BOOKMARK */}
-                  <TouchableOpacity className="bg-gray-100 p-3 rounded-2xl">
-                    <Ionicons
-                      name="bookmark-outline"
-                      size={18}
-                      color="#6B7280"
-                    />
-                  </TouchableOpacity>
+                  <View className="flex-row items-center">
+                    {/* Edit */}
+                    <TouchableOpacity
+										onPress={()=>navigation.navigate("EditBlog",{blogId:blog._id,title:blog.title,description:blog.description})}
+										 className="bg-blue-50 border border-blue-100 p-3 rounded-2xl mr-2"
+										  >
+                      <Ionicons
+                        name="create-outline"
+                        size={18}
+                        color="#2563EB"
+                      />
+                    </TouchableOpacity>
+
+                    {/* Delete */}
+                    <TouchableOpacity className="bg-red-50 border border-red-100 p-3 rounded-2xl">
+                      <Ionicons
+                        name="trash-outline"
+                        size={18}
+                        color="#DC2626"
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </TouchableOpacity>
