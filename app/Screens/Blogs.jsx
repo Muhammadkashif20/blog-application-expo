@@ -1,24 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
 import Axios from "axios";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation , useFocusEffect } from "@react-navigation/native";
 const Blogs = () => {
   const [blogs, setBlogs] = useState([]);
-	const navigation = useNavigation();
+  const navigation = useNavigation();
+
   const getBlog = async () => {
     try {
-      const response = await Axios.get("http://192.168.1.9:4000/api/GetBlogs");
+      const response = await Axios.get("http://192.168.1.9:4000/api/getBlogs");
       setBlogs(response.data);
     } catch (error) {
       console.log("Error:", error);
     }
   };
 
-  useEffect(() => {
-    getBlog();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getBlog();
+    }, []),
+  );
+
+  const HandleDelete = async (blogId) => {
+    try {
+      await Axios.delete(`http://192.168.1.9:4000/api/deleteBlog/${blogId}`);
+      getBlog();
+      alert("Blog Deleted Successfully!");
+    } catch (error) {
+      console.log("Delete Error:", error);
+    }
+  };
+
   const formatTimeOnly = (dateString) => {
     const date = new Date(dateString);
 
@@ -29,27 +43,9 @@ const Blogs = () => {
     return `Today • ${time}`;
   };
 
-		const editBlog = async(id,title,description)=>{
-			try {
-			    const response = await Axios.put(`http://192.168.1.9:4000/api/updateBlog/${id}`,{
-						title:"Updated Title",
-						description:"Updated Description"
-					});
-					console.log("Blog updated:", response.data);
-					const updatedBlogs = blogs.map((blog) =>
-						blog._id === response.data._id ? response.data : blog
-					);
-					setBlogs(updatedBlogs);
-			}
-			catch(error){
-				console.log("Error:",error)
-			}
-		}
-
   return (
     <View className="flex-1">
       <Header />
-
       <ScrollView
         className="flex-1 bg-white"
         showsVerticalScrollIndicator={false}
@@ -67,7 +63,9 @@ const Blogs = () => {
               </Text>
             </View>
 
-            <TouchableOpacity className="bg-violet-50 border border-violet-100 px-4 py-2 rounded-2xl">
+            <TouchableOpacity
+						onPress={() => navigation.navigate("Home")}
+						className="bg-violet-50 border border-violet-100 px-4 py-2 rounded-2xl">
               <Text className="text-violet-700 text-xs font-semibold">
                 Latest Posts
               </Text>
@@ -161,14 +159,21 @@ const Blogs = () => {
                         Content Creator
                       </Text>
                     </View>
-                  </View>/
-
+                  </View>
                   <View className="flex-row items-center">
                     {/* Edit */}
                     <TouchableOpacity
-										onPress={()=>navigation.navigate("EditBlog",{blogId:blog._id,title:blog.title,description:blog.description})}
-										 className="bg-blue-50 border border-blue-100 p-3 rounded-2xl mr-2"
-										  >
+                      onPress={() => {
+                        console.log(
+                          "Navigating to EditBlog with ID:",
+                          blog._id,
+                        );
+                        navigation.navigate("EditBlog", {
+                          blogId: blog._id,
+                        });
+                      }}
+                      className="bg-blue-50 border border-blue-100 p-3 rounded-2xl mr-2"
+                    >
                       <Ionicons
                         name="create-outline"
                         size={18}
@@ -177,7 +182,10 @@ const Blogs = () => {
                     </TouchableOpacity>
 
                     {/* Delete */}
-                    <TouchableOpacity className="bg-red-50 border border-red-100 p-3 rounded-2xl">
+                    <TouchableOpacity
+                      onPress={() => HandleDelete(blog._id)}
+                      className="bg-red-50 border border-red-100 p-3 rounded-2xl"
+                    >
                       <Ionicons
                         name="trash-outline"
                         size={18}
