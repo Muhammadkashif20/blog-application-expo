@@ -10,6 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
 import Axios from "axios";
+import Toast from "react-native-toast-message";
 const AddBlog = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -19,7 +20,11 @@ const AddBlog = () => {
   const publishBlog = async () => {
     try {
       if (!title || !description) {
-        alert("Please fill in all fields before publishing.");
+        Toast.show({
+          type: "error",
+          text1: "Missing Fields",
+          text2: "Please fill in all fields before publishing.",
+        });
         return;
       }
 
@@ -28,13 +33,22 @@ const AddBlog = () => {
         description,
         image: image,
       });
-      alert("Blog published successfully!");
+      Toast.show({
+        type: "success",
+        text1: "Blog Published",
+        text2: "Blog Published Successfully.",
+      });
       // Clear form fields after successful submission
       setTitle("");
       setDescription("");
+			setImage("");
     } catch (error) {
       console.error("Error publishing blog:", error);
-      alert("Failed to publish blog. Please try again.");
+      Toast.show({
+        type: "error",
+        text1: "Publish Failed",
+        text2: "Failed to publish the blog.",
+      });
     }
   };
 
@@ -59,10 +73,18 @@ const AddBlog = () => {
 
       setImage(res.data.url);
 
-      alert("Image Uploaded Successfully");
+      Toast.show({
+        type: "success",
+        text1: "Image Uploaded",
+        text2: "Image Uploaded Successfully.",
+      });
     } catch (error) {
       console.log(error.response?.data || error.message);
-      alert("Image Upload Failed");
+      Toast.show({
+        type: "error",
+        text1: "Upload Failed",
+        text2: "Failed to upload the image.",
+      });
     } finally {
       setUploading(false);
     }

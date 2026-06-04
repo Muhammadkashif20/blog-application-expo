@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
+import Toast from "react-native-toast-message";
 const EditBlog = ({ route }) => {
   const { blogId } = route.params;
   console.log("Route Params:", route.params);
@@ -79,10 +80,18 @@ const EditBlog = ({ route }) => {
 
       setImage(res.data.url);
 
-      alert("Image Uploaded Successfully");
+      Toast.show({
+        type: "success",
+        text1: "Image Uploaded",
+        text2: "Image Uploaded Successfully.",
+      });
     } catch (error) {
       console.log(error.response?.data || error.message);
-      alert("Image Upload Failed");
+      Toast.show({
+        type: "error",
+        text1: "Upload Failed",
+        text2: "Failed to upload the image.",
+      });
     } finally {
       setUploading(false);
     }

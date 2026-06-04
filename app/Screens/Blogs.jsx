@@ -30,7 +30,7 @@ const Blogs = () => {
       Toast.show({
         type: "success",
         text1: "Blog Deleted",
-        text2: "The blog has been deleted successfully.",
+        text2: "Blog Deleted Successfully.",
       	});
     } catch (error) {
       console.log("Delete Error:", error);
