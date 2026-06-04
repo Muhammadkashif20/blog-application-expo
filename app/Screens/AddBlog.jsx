@@ -14,6 +14,7 @@ const AddBlog = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const publishBlog = async () => {
     try {
@@ -25,58 +26,47 @@ const AddBlog = () => {
       await Axios.post("http://192.168.1.9:4000/api/AddBlog", {
         title,
         description,
-        image: image 
+        image: image,
       });
       alert("Blog published successfully!");
-			// Clear form fields after successful submission
-			setTitle("");
-			setDescription("");
+      // Clear form fields after successful submission
+      setTitle("");
+      setDescription("");
     } catch (error) {
       console.error("Error publishing blog:", error);
       alert("Failed to publish blog. Please try again.");
     }
   };
 
-const pickImage = async () => {
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ["images"],
-    quality: 1,
-  });
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 1,
+      base64: true,
+    });
 
-  if (!result.canceled) {
-    uploadToCloudinary(result.assets[0].uri);
-  }
-};
+    if (!result.canceled) {
+      uploadImage(result.assets[0].base64);
+    }
+  };
 
-const uploadToCloudinary = async (imageUri) => {
-  const data = new FormData();
+  const uploadImage = async (base64) => {
+    try {
+      setUploading(true);
+      const res = await Axios.post("http://192.168.1.9:4000/api/upload-image", {
+        image: `data:image/jpeg;base64,${base64}`,
+      });
 
-  data.append("file", {
-    uri: imageUri,
-    type: "image/jpeg",
-    name: "blog.jpg",
-  });
+      setImage(res.data.url);
 
-  data.append("upload_preset", "blog-application-mobile");
-
-  try {
-    const res = await Axios.post(
-      "https://api.cloudinary.com/v1_1/dgnn4wr2k/image/upload",
-      data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    setImage(res.data.secure_url);
-
-    alert("Image Uploaded Successfully");
-  } catch (error) {
-    console.log(error);
-  }
-};
+      alert("Image Uploaded Successfully");
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+      alert("Image Upload Failed");
+    } finally {
+      setUploading(false);
+    }
+  };
   return (
     <View className="flex-1">
       <Header />
@@ -138,7 +128,7 @@ const uploadToCloudinary = async (imageUri) => {
               </Text>
 
               <TextInput
-								value={title}
+                value={title}
                 onChangeText={(text) => setTitle(text)}
                 placeholder="Enter a Blog Title..."
                 placeholderTextColor="#B0B0B0"
@@ -193,67 +183,77 @@ const uploadToCloudinary = async (imageUri) => {
               />
             </View>
 
-         {/* IMAGE SECTION */}
-<View className="mt-5">
-  <Text className="text-gray-800 text-sm font-semibold mb-2 uppercase tracking-wide">
-    Blog Image
-  </Text>
+            {/* IMAGE SECTION */}
+            <View className="mt-5">
+              <Text className="text-gray-800 text-sm font-semibold mb-2 uppercase tracking-wide">
+                Blog Image
+              </Text>
 
-  {/* Image URL Input */}
-  <TextInput
-    value={image}
-    onChangeText={setImage}
-    placeholder="Paste Image URL..."
-    placeholderTextColor="#B0B0B0"
-    className="bg-gray-50 px-4 py-4 rounded-2xl text-gray-900 border border-gray-200"
-  />
+              {/* Image URL Input */}
+              <TextInput
+                value={image}
+                onChangeText={setImage}
+                placeholder="Paste Image URL..."
+                placeholderTextColor="#B0B0B0"
+                className="bg-gray-50 px-4 py-4 rounded-2xl text-gray-900 border border-gray-200"
+              />
 
-  {/* OR Divider */}
-  <View className="flex-row items-center my-4">
-    <View className="flex-1 h-px bg-gray-200" />
-    <Text className="mx-3 text-gray-400 text-xs">OR</Text>
-    <View className="flex-1 h-px bg-gray-200" />
-  </View>
+              {/* OR Divider */}
+              <View className="flex-row items-center my-4">
+                <View className="flex-1 h-px bg-gray-200" />
+                <Text className="mx-3 text-gray-400 text-xs">OR</Text>
+                <View className="flex-1 h-px bg-gray-200" />
+              </View>
 
-  {/* Upload Button */}
-  <TouchableOpacity
-    className="border border-dashed border-violet-300 bg-violet-50 rounded-2xl p-5 items-center"
-    onPress={pickImage}
-  >
-    <Ionicons name="image-outline" size={28} color="#7C3AED" />
+              {/* Upload Button */}
+              <TouchableOpacity
+                className="border border-dashed border-violet-300 bg-violet-50 rounded-2xl p-5 items-center"
+                onPress={pickImage}
+                disabled={uploading}
+              >
+                <Ionicons name="image-outline" size={28} color="#7C3AED" />
 
-    <Text className="text-violet-700 font-semibold mt-2">
-      Upload Image
-    </Text>
+                {uploading ? (
+                  <Text className="text-violet-700 font-semibold mt-2">
+                    Uploading Image...
+                  </Text>
+                ) : (
+                  <Text className="text-violet-700 font-semibold mt-2">
+                    Upload Image
+                  </Text>
+                )}
 
-    <Text className="text-gray-500 text-xs mt-1">
-      JPG, PNG, WEBP
-    </Text>
-  </TouchableOpacity>
+                <Text className="text-gray-500 text-xs mt-1">
+                  JPG, PNG, WEBP
+                </Text>
+              </TouchableOpacity>
 
-  {image && (
-    <Text className="text-green-600 text-xs mt-2">
-      ✓ Image URL Set
-    </Text>
-  )}
-</View>
+              {image && (
+                <Text className="text-green-600 text-xs mt-2">
+                  ✓ Image URL Set
+                </Text>
+              )}
+            </View>
 
-          {/* PUBLISH BUTTON */}
-          <TouchableOpacity
-            onPress={publishBlog}
-            className="bg-violet-600 py-5 rounded-2xl items-center my-6"
-            style={{
-              shadowColor: "#7C3AED",
-              shadowOpacity: 0.25,
-              shadowRadius: 12,
-              elevation: 1,
-            }}
-          >
-            <Text className="text-white font-semibold text-base">
-              Publish Story
-            </Text>
-          </TouchableOpacity>
-        </View>
+            {/* PUBLISH BUTTON */}
+            <TouchableOpacity
+              onPress={publishBlog}
+              disabled={uploading || !image}
+              className={`py-5 rounded-2xl items-center my-6 ${
+                uploading || !image ? "bg-gray-400" : "bg-violet-600"
+              }`}
+              style={{
+                shadowColor: "#7C3AED",
+                shadowOpacity: 0.25,
+                shadowRadius: 12,
+                elevation: 1,
+              }}
+            >
+              <Text className="text-white font-semibold text-base">
+                Publish Story
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>

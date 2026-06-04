@@ -3,11 +3,11 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
 import Axios from "axios";
+import Toast from "react-native-toast-message";
 import { useNavigation , useFocusEffect } from "@react-navigation/native";
 const Blogs = () => {
   const [blogs, setBlogs] = useState([]);
   const navigation = useNavigation();
-
   const getBlog = async () => {
     try {
       const response = await Axios.get("http://192.168.1.9:4000/api/getBlogs");
@@ -27,9 +27,18 @@ const Blogs = () => {
     try {
       await Axios.delete(`http://192.168.1.9:4000/api/deleteBlog/${blogId}`);
       getBlog();
-      alert("Blog Deleted Successfully!");
+      Toast.show({
+        type: "success",
+        text1: "Blog Deleted",
+        text2: "The blog has been deleted successfully.",
+      	});
     } catch (error) {
       console.log("Delete Error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Delete Failed",
+        text2: "Failed to delete the blog.",
+      });
     }
   };
 

@@ -16,11 +16,11 @@ const EditBlog = ({ route }) => {
   console.log("Route Params:", route.params);
   console.log("Blog ID:", blogId);
   const navigation = useNavigation();
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState("");
+	const [uploading, setUploading] = useState(false);
 
   const getBlog = async () => {
     try {
@@ -62,42 +62,31 @@ const EditBlog = ({ route }) => {
 		const result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ["images"],
 			quality: 1,
+			base64: true,
 		});
 	
 		if (!result.canceled) {
-			uploadToCloudinary(result.assets[0].uri);
+			uploadImage(result.assets[0].base64);
 		}
 	};
 	
-	const uploadToCloudinary = async (imageUri) => {
-		const data = new FormData();
-	
-		data.append("file", {
-			uri: imageUri,
-			type: "image/jpeg",
-			name: "blog.jpg",
-		});
-	
-		data.append("upload_preset", "blog-application-mobile");
-	
-		try {
-			const res = await Axios.post(
-				"https://api.cloudinary.com/v1_1/dgnn4wr2k/image/upload",
-				data,
-				{
-					headers: {
-						"Content-Type": "multipart/form-data",
-					},
-				}
-			);
-	
-			setImage(res.data.secure_url);
-	
-			alert("Edit Image Uploaded Successfully");
-		} catch (error) {
-			console.log(error);
-		}
-	};
+  const uploadImage = async (base64) => {
+    try {
+      setUploading(true);
+      const res = await Axios.post("http://192.168.1.9:4000/api/upload-image", {
+        image: `data:image/jpeg;base64,${base64}`,
+      });
+
+      setImage(res.data.url);
+
+      alert("Image Uploaded Successfully");
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+      alert("Image Upload Failed");
+    } finally {
+      setUploading(false);
+    }
+  };
   return (
     <View className="flex-1">
       <Header />
@@ -233,21 +222,28 @@ const EditBlog = ({ route }) => {
                 <View className="flex-1 h-px bg-gray-200" />
               </View>
 
-              <TouchableOpacity
-                onPress={pickImage}
-                className="border border-dashed border-blue-300 bg-blue-50 rounded-2xl p-5 items-center"
-              >
-                <Ionicons name="image-outline" size={28} color="#2563EB" />
-
-                <Text className="text-blue-700 font-semibold mt-2">
-                  Change Image
-                </Text>
-
-                <Text className="text-gray-500 text-xs mt-1">
-                  JPG, PNG, WEBP
-                </Text>
-              </TouchableOpacity>
-
+          	{/* Edit Upload Button */}
+												<TouchableOpacity
+													className="border border-dashed border-violet-300 bg-violet-50 rounded-2xl p-5 items-center"
+													onPress={pickImage}
+													disabled={uploading}
+												>
+													<Ionicons name="image-outline" size={28} color="#7C3AED" />
+					
+													{uploading ? (
+														<Text className="text-violet-700 font-semibold mt-2">
+															Uploading Image...
+														</Text>
+													) : (
+														<Text className="text-violet-700 font-semibold mt-2">
+															Upload Image
+														</Text>
+													)}
+					
+													<Text className="text-gray-500 text-xs mt-1">
+														JPG, PNG, WEBP
+													</Text>
+												</TouchableOpacity>
               {image ? (
                 <Text className="text-green-600 text-xs mt-2">
                   ✓ Image Updated
@@ -258,8 +254,11 @@ const EditBlog = ({ route }) => {
 
           {/* UPDATE BUTTON */}
           <TouchableOpacity
-            onPress={updateBlog}
-            className="bg-blue-600 py-5 rounded-2xl items-center mt-6 mb-14"
+              onPress={updateBlog}
+              disabled={uploading || !image}
+              className={`py-5 rounded-2xl items-center my-6 ${
+                uploading || !image ? "bg-gray-400" : "bg-violet-600"
+              }`}
             style={{
               shadowColor: "#2563EB",
               shadowOpacity: 0.25,
