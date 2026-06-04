@@ -1,3 +1,4 @@
+import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
   View,
@@ -12,7 +13,7 @@ import Axios from "axios";
 const AddBlog = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState("");
 
   const publishBlog = async () => {
     try {
@@ -24,7 +25,7 @@ const AddBlog = () => {
       await Axios.post("http://192.168.1.9:4000/api/AddBlog", {
         title,
         description,
-        image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+        image: image 
       });
       alert("Blog published successfully!");
 			// Clear form fields after successful submission
@@ -36,6 +37,46 @@ const AddBlog = () => {
     }
   };
 
+const pickImage = async () => {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ["images"],
+    quality: 1,
+  });
+
+  if (!result.canceled) {
+    uploadToCloudinary(result.assets[0].uri);
+  }
+};
+
+const uploadToCloudinary = async (imageUri) => {
+  const data = new FormData();
+
+  data.append("file", {
+    uri: imageUri,
+    type: "image/jpeg",
+    name: "blog.jpg",
+  });
+
+  data.append("upload_preset", "blog-application-mobile");
+
+  try {
+    const res = await Axios.post(
+      "https://api.cloudinary.com/v1_1/dgnn4wr2k/image/upload",
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    setImage(res.data.secure_url);
+
+    alert("Image Uploaded Successfully");
+  } catch (error) {
+    console.log(error);
+  }
+};
   return (
     <View className="flex-1">
       <Header />
@@ -152,17 +193,50 @@ const AddBlog = () => {
               />
             </View>
 
-            {/* MEDIA ACTIONS */}
-            <View className="flex-row items-center mt-6">
-              <TouchableOpacity className="bg-white border border-gray-200 p-3 rounded-2xl mr-3">
-                <Ionicons name="image-outline" size={20} color="#7C3AED" />
-              </TouchableOpacity>
+         {/* IMAGE SECTION */}
+<View className="mt-5">
+  <Text className="text-gray-800 text-sm font-semibold mb-2 uppercase tracking-wide">
+    Blog Image
+  </Text>
 
-              <TouchableOpacity className="bg-white border border-gray-200 p-3 rounded-2xl">
-                <Ionicons name="link-outline" size={20} color="#7C3AED" />
-              </TouchableOpacity>
-            </View>
-          </View>
+  {/* Image URL Input */}
+  <TextInput
+    value={image}
+    onChangeText={setImage}
+    placeholder="Paste Image URL..."
+    placeholderTextColor="#B0B0B0"
+    className="bg-gray-50 px-4 py-4 rounded-2xl text-gray-900 border border-gray-200"
+  />
+
+  {/* OR Divider */}
+  <View className="flex-row items-center my-4">
+    <View className="flex-1 h-px bg-gray-200" />
+    <Text className="mx-3 text-gray-400 text-xs">OR</Text>
+    <View className="flex-1 h-px bg-gray-200" />
+  </View>
+
+  {/* Upload Button */}
+  <TouchableOpacity
+    className="border border-dashed border-violet-300 bg-violet-50 rounded-2xl p-5 items-center"
+    onPress={pickImage}
+  >
+    <Ionicons name="image-outline" size={28} color="#7C3AED" />
+
+    <Text className="text-violet-700 font-semibold mt-2">
+      Upload Image
+    </Text>
+
+    <Text className="text-gray-500 text-xs mt-1">
+      JPG, PNG, WEBP
+    </Text>
+  </TouchableOpacity>
+
+  {image && (
+    <Text className="text-green-600 text-xs mt-2">
+      ✓ Image URL Set
+    </Text>
+  )}
+</View>
 
           {/* PUBLISH BUTTON */}
           <TouchableOpacity
@@ -179,6 +253,7 @@ const AddBlog = () => {
               Publish Story
             </Text>
           </TouchableOpacity>
+        </View>
         </View>
       </ScrollView>
     </View>

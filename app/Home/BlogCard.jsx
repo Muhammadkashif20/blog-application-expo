@@ -7,7 +7,7 @@ import Axios from "axios";
 export default function BlogCard() {
   const navigation = useNavigation();
   const [latestBlog, setLatestBlog] = useState(null);
-
+	
   const getLatestBlog = async () => {
     try {
       const res = await Axios.get(
@@ -26,7 +26,6 @@ export default function BlogCard() {
     getLatestBlog();
   }, []);
 
-  // 👇 safe convert to array for map
   const blogData = latestBlog ? [latestBlog] : [];
 
   return (
