@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
 import Axios from "axios";
 import Toast from "react-native-toast-message";
-import { useNavigation , useFocusEffect } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 const Blogs = () => {
   const [blogs, setBlogs] = useState([]);
   const navigation = useNavigation();
@@ -31,7 +31,7 @@ const Blogs = () => {
         type: "success",
         text1: "Blog Deleted",
         text2: "Blog Deleted Successfully.",
-      	});
+      });
     } catch (error) {
       console.log("Delete Error:", error);
       Toast.show({
@@ -44,12 +44,25 @@ const Blogs = () => {
 
   const formatTimeOnly = (dateString) => {
     const date = new Date(dateString);
+    const now = new Date();
 
     const time = date.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
     });
-    return `Today • ${time}`;
+
+    const isToday = date.toDateString() === now.toDateString();
+
+    if (isToday) {
+      return `Today • ${time}`;
+    }
+
+    const formattedDate = date.toLocaleDateString([], {
+      day: "2-digit",
+      month: "short",
+    });
+
+    return `${formattedDate} • ${time}`;
   };
 
   return (
@@ -73,8 +86,9 @@ const Blogs = () => {
             </View>
 
             <TouchableOpacity
-						onPress={() => navigation.navigate("Home")}
-						className="bg-violet-50 border border-violet-100 px-4 py-2 rounded-2xl">
+              onPress={() => navigation.navigate("Home")}
+              className="bg-violet-50 border border-violet-100 px-4 py-2 rounded-2xl"
+            >
               <Text className="text-violet-700 text-xs font-semibold">
                 Latest Posts
               </Text>
