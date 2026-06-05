@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
 import Axios from "axios";
 import Toast from "react-native-toast-message";
-import {Base_URL} from "../../utils/baseurl";
+import {BASE_URL} from "../../utils/baseurl";
 
 const AddBlog = () => {
   const [title, setTitle] = useState("");
@@ -30,7 +30,7 @@ const AddBlog = () => {
         return;
       }
 
-      await Axios.post(`${Base_URL}/api/AddBlog`, {
+      await Axios.post(`${BASE_URL}/api/AddBlog`, {
         title,
         description,
         image: image,
@@ -69,7 +69,7 @@ const AddBlog = () => {
   const uploadImage = async (base64) => {
     try {
       setUploading(true);
-      const res = await Axios.post(`${Base_URL}/api/upload-image`, {
+      const res = await Axios.post(`${BASE_URL}/api/upload-image`, {
         image: `data:image/jpeg;base64,${base64}`,
       });
 

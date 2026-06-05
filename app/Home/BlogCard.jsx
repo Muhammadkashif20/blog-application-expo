@@ -3,7 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Axios from "axios";
-import {Base_URL} from "../../utils/baseurl";
+import {BASE_URL} from "../../utils/baseurl";
 
 export default function BlogCard() {
   const navigation = useNavigation();
@@ -12,7 +12,7 @@ export default function BlogCard() {
   const getLatestBlog = async () => {
     try {
       const res = await Axios.get(
-        `${Base_URL}/api/getBlogs`
+        `${BASE_URL}/api/getBlogs`
       );
 
       const data = res.data;

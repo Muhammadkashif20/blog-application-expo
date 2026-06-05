@@ -12,7 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../Home/Header";
 import Toast from "react-native-toast-message";
-import {Base_URL} from "../../utils/baseurl";
+import {BASE_URL} from "../../utils/baseurl";
 const EditBlog = ({ route }) => {
   const { blogId } = route.params;
   console.log("Route Params:", route.params);
@@ -28,7 +28,7 @@ const EditBlog = ({ route }) => {
   const getBlog = async () => {
     try {
       const response = await Axios.get(
-        `${Base_URL}/api/getSingleBlog/${blogId}`,
+        `${BASE_URL}/api/getSingleBlog/${blogId}`,
       );
       console.log("Get Blog Response in EditBlog:", response.data);
       setTitle(response.data.title);
@@ -47,7 +47,7 @@ const EditBlog = ({ route }) => {
   const updateBlog = async () => {
     try {
       setLoading(true);
-      await Axios.put(`${Base_URL}/api/updateBlog/${blogId}`, {
+      await Axios.put(`${BASE_URL}/api/updateBlog/${blogId}`, {
         title,
         description,
 				image: image ||imageUrl,
@@ -76,7 +76,7 @@ const EditBlog = ({ route }) => {
   const uploadImage = async (base64) => {
     try {
       setUploading(true);
-      const res = await Axios.post(`${Base_URL}/api/upload-image`, {
+      const res = await Axios.post(`${BASE_URL}/api/upload-image`, {
         image: `data:image/jpeg;base64,${base64}`,
       });
 
