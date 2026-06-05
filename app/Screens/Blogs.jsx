@@ -5,12 +5,14 @@ import Header from "../Home/Header";
 import Axios from "axios";
 import Toast from "react-native-toast-message";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import {Base_URL} from "../../utils/baseurl";
+
 const Blogs = () => {
   const [blogs, setBlogs] = useState([]);
   const navigation = useNavigation();
   const getBlog = async () => {
     try {
-      const response = await Axios.get("http://192.168.1.9:4000/api/getBlogs");
+      const response = await Axios.get(`${Base_URL}/api/getBlogs`);
       setBlogs(response.data);
     } catch (error) {
       console.log("Error:", error);
@@ -25,7 +27,7 @@ const Blogs = () => {
 
   const HandleDelete = async (blogId) => {
     try {
-      await Axios.delete(`http://192.168.1.9:4000/api/deleteBlog/${blogId}`);
+      await Axios.delete(`${Base_URL}/api/deleteBlog/${blogId}`);
       getBlog();
       Toast.show({
         type: "success",
